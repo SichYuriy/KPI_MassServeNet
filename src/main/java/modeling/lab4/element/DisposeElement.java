@@ -2,9 +2,7 @@ package modeling.lab4.element;
 
 import lombok.Getter;
 import modeling.lab4.Requirement;
-import modeling.lab4.element.state.CreateElementState;
 import modeling.lab4.element.state.DisposeElementState;
-import modeling.lab4.element.state.ElementState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +41,7 @@ public class DisposeElement extends Element {
     public DisposeElementState getState() {
         return DisposeElementState.builder()
                 .id(getId())
-                .requirementCount(getOutActionCount())
+                .requirementCount(getInActionCount())
                 .requirementTypeCount(new HashMap<>(requirementTypeCount))
                 .build();
     }

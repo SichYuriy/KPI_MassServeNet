@@ -9,8 +9,7 @@ public class Blocks {
 
     public static Block createAllChannelsBusyBlock(Arc arc, List<Chanel> chanelList) {
         Block block = new Block(() -> chanelList.stream().noneMatch(Chanel::isFree));
-        chanelList.forEach(c -> c.addAfterInAction(block::refresh));
-        chanelList.forEach(c -> c.addAfterOutAction(block::refresh));
+        chanelList.forEach(c -> c.addAfterStateChangeAction(block::refresh));
         arc.setBlock(block);
         return block;
     }

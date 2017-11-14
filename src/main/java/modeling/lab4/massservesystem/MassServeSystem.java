@@ -1,8 +1,8 @@
 package modeling.lab4.massservesystem;
 
-import modeling.lab4.element.Element;
 import modeling.lab4.Requirement;
 import modeling.lab4.arc.Arc;
+import modeling.lab4.element.Element;
 import modeling.lab4.element.state.MassServeSystemState;
 import modeling.lab4.queue.RequirementQueue;
 
@@ -93,11 +93,25 @@ public class MassServeSystem extends Element {
     @Override
     public void updateStatistics(double timeStep) {
         chanelList.forEach(c -> c.updateStatistics(timeStep));
+        requirementQueue.updateStatistics(timeStep);
     }
 
     @Override
     public void setTimeCurrent(double timeCurrent) {
         super.setTimeCurrent(timeCurrent);
         chanelList.forEach(c -> c.setTimeCurrent(timeCurrent));
+        requirementQueue.setTimeCurrent(timeCurrent);
+    }
+
+    public RequirementQueue getRequirementQueue() {
+        return requirementQueue;
+    }
+
+    public List<Chanel> getChanelList() {
+        return chanelList;
+    }
+
+    public Chanel getNextChanel() {
+        return nextChanel;
     }
 }

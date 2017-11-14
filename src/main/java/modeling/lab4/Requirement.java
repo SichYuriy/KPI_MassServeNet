@@ -23,4 +23,11 @@ public class Requirement {
     public String getRequirementType() {
         return requirementType;
     }
+
+    public double getLifeTime(double currentTime) {
+        if (disposeTime < creationTime) {
+            return currentTime - creationTime;
+        }
+        return disposeTime - creationTime;
+    }
 }

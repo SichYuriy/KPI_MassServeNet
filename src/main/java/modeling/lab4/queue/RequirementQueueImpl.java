@@ -23,6 +23,10 @@ public class RequirementQueueImpl implements RequirementQueue {
 
     private RejectAction rejectAction;
 
+    private double timeCurrent;
+
+    private double meanSizeQueue;
+
     private final List<Requirement> requirements = new ArrayList<>();
 
     private final List<GeneralAction> afterPopActions = new ArrayList<>();
@@ -102,5 +106,21 @@ public class RequirementQueueImpl implements RequirementQueue {
     @Override
     public String getId() {
         return id;
+    }
+
+    @Override
+    public void setTimeCurrent(double timeCurrent) {
+        failCollector.setTimeCurrent(timeCurrent);
+        this.timeCurrent = timeCurrent;
+    }
+
+    @Override
+    public void updateStatistics(double timeStep) {
+        meanSizeQueue += timeStep * getSize();
+    }
+
+    @Override
+    public double calcAvgQueuSize() {
+        return meanSizeQueue / timeCurrent;
     }
 }

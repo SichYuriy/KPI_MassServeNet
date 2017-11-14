@@ -4,14 +4,16 @@ import lombok.Getter;
 import lombok.Setter;
 import modeling.lab4.Requirement;
 import modeling.lab4.block.UnblockAction;
-import modeling.lab4.element.Element;
 import modeling.lab4.element.state.ChanelObjectState;
 import modeling.lab4.numbergeneration.NumberGenerator;
 import modeling.lab4.util.GeneralAction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
-public class Chanel extends Element {
+public class Chanel {
 
     private ChanelState chanelState;
 
@@ -24,24 +26,28 @@ public class Chanel extends Element {
     private double timeCurrent;
     private double timeNextProcessEnd;
 
+    private final List<GeneralAction> afterStateChangeActions = new ArrayList<>();
+
+    private final String id;
+
     private Requirement tempRequirement;
 
     private final NumberGenerator delayGenerator;
     private MassServeSystem parentSystem;
 
     public Chanel(String id, NumberGenerator delayGenerator) {
-        super(id);
+        this.id = id;
         this.delayGenerator = delayGenerator;
         timeNextProcessEnd = Double.MAX_VALUE;
         chanelState = ChanelState.FREE;
     }
 
-    @Override
-    public void inAction(Requirement requirement) {
+    public void doInAction(Requirement requirement) {
         if (!isFree()) {
             throw new IllegalStateException("Chanel is " + chanelState);
         }
         this.chanelState = ChanelState.BUSY;
+        afterStateChangeActions.forEach(GeneralAction::execute);
         this.tempRequirement = requirement;
         timeNextProcessEnd = getTimeCurrent() + delayGenerator.generateNumber();
     }
@@ -52,14 +58,16 @@ public class Chanel extends Element {
         tempRequirement = null;
         processCount++;
         timeNextProcessEnd = Double.MAX_VALUE;
-        getAfterOutActions().forEach(GeneralAction::execute);
+        afterStateChangeActions.forEach(GeneralAction::execute);
         return result;
     }
 
     public UnblockAction blockChanel() {
-        chanelState = ChanelState.BLOCKED;
-        timeNextProcessEnd = Double.MAX_VALUE;
-        getAfterOutActions().forEach(GeneralAction::execute);
+        if (!ChanelState.BLOCKED.equals(chanelState)) {
+            chanelState = ChanelState.BLOCKED;
+            timeNextProcessEnd = Double.MAX_VALUE;
+            afterStateChangeActions.forEach(GeneralAction::execute);
+        }
         return this::trySendRequirement;
     }
 
@@ -74,8 +82,7 @@ public class Chanel extends Element {
         }
     }
 
-    @Override
-    protected void outAction() {
+    protected void doOutAction() {
         trySendRequirement();
     }
 
@@ -93,11 +100,6 @@ public class Chanel extends Element {
         }
     }
 
-    @Override
-    public double getTimeNext() {
-        return timeNextProcessEnd;
-    }
-
     public ChanelObjectState getState() {
         return ChanelObjectState.builder()
                 .state(chanelState)
@@ -110,6 +112,10 @@ public class Chanel extends Element {
                 .timeNextProcessEnd(timeNextProcessEnd)
                 .tempRequirement(tempRequirement != null ? tempRequirement.getRequirementType(): "null")
                 .build();
+    }
+
+    public void addAfterStateChangeAction(GeneralAction generalAction) {
+        afterStateChangeActions.add(generalAction);
     }
 
 }

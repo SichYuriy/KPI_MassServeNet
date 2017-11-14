@@ -13,7 +13,11 @@ import modeling.lab4.numbergeneration.NumberGenerator;
 import modeling.lab4.queue.Queues;
 import modeling.lab4.queue.RequirementQueueImpl;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
@@ -61,27 +65,33 @@ public class Main {
         Chanel window2 = new Chanel("window2", new NormNumberGenerator(1, 0.3));
         MassServeSystem window2System = new MassServeSystem("wind2S", queue2, Collections.singletonList(window2));
 
+        AtomicInteger changeLineCount = new AtomicInteger(0);
+
         queue1.addAfterPopAction(() -> {
-            if (queue2.getSize() - queue1.getSize() >= 2)
+            if (queue2.getSize() - queue1.getSize() >= 2) {
                 queue1.pushRequirement(queue2.popRequirement());
+                changeLineCount.incrementAndGet();
+            }
         });
 
         queue2.addAfterPopAction(() -> {
-            if (queue1.getSize() - queue2.getSize() >= 2)
+            if (queue1.getSize() - queue2.getSize() >= 2) {
                 queue2.pushRequirement(queue1.popRequirement());
+                changeLineCount.incrementAndGet();
+            }
         });
 
         DisposeElement system1Dispose = new DisposeElement("dispose1");
         DisposeElement system2Dispose = new DisposeElement("dispose2");
 
         Arcs.bindOneToManyWithBranching(createElement, Arrays.asList(window1System, window2System),
-                new ShortestQueueWayChoosingStrategy(Arrays.asList(queue1, queue2)));
+                new ShortestQueueWayChoosingStrategy(Arrays.asList(window1System, window2System)));
         Arcs.bindWithSingleArc(window1System, system1Dispose);
-        Arcs.bindWithSingleArc(window2System, system1Dispose);
+        Arcs.bindWithSingleArc(window2System, system2Dispose);
 
         // Start obstacles
-        window1.inAction(new Requirement());
-        window2.inAction(new Requirement());
+        window1.doInAction(new Requirement());
+        window2.doInAction(new Requirement());
 
         queue1.pushRequirement(new Requirement());
         queue1.pushRequirement(new Requirement());
@@ -93,21 +103,35 @@ public class Main {
 
         //Simulation
         MassServeNet massServeNet = new MassServeNet(Arrays.asList(createElement, window1System, window2System, system1Dispose, system2Dispose));
-        massServeNet.simulate(300);
+        massServeNet.simulate(1000);
 
         //Results
         printLogs(massServeNet);
 
+        double totalTime = massServeNet.getTimeCurrent();
         List<Requirement> allReq = new ArrayList<>();
         allReq.addAll(system1Dispose.getRequirements());
         allReq.addAll(system2Dispose.getRequirements());
         allReq.addAll(queue1.getFailCollector().getRequirements());
         allReq.addAll(queue2.getFailCollector().getRequirements());
-
-
+        double avgClients = allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / massServeNet.getTimeCurrent();
+        double avgLifeTime = allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / allReq.size();
         System.out.println("RESULTS: ");
         System.out.println("window1 load:" + window1.getBusyTime() / (window1.getBusyTime() + window1.getBlockedTime() + window1.getFreeTime()));
         System.out.println("window2 load:" + window2.getBusyTime() / (window2.getBusyTime() + window2.getBlockedTime() + window2.getFreeTime()));
+
+        System.out.println("avg clients count: " + avgClients);
+
+        System.out.println("window1 time per client: " + (totalTime / window1.getProcessCount()));
+        System.out.println("window2 time per client: " + (totalTime / window2.getProcessCount()));
+
+        System.out.println("avg client serve time: " + avgLifeTime);
+
+        System.out.println("queue1 size: " + queue1.calcAvgQueuSize());
+        System.out.println("queue2 size: " + queue2.calcAvgQueuSize());
+
+        System.out.println("failure probability: " + (1.0 * (queue1.getFailCollector().getInActionCount() + queue2.getFailCollector().getInActionCount()) / allReq.size()));
+        System.out.println("line change count: " + changeLineCount);
 
     }
 

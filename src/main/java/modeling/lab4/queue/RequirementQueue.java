@@ -18,4 +18,10 @@ public interface RequirementQueue {
     void addAfterPushAction(GeneralAction generalAction);
 
     QueueState getState();
+
+    void setTimeCurrent(double time);
+
+    void updateStatistics(double timeStep);
+
+    double calcAvgQueuSize();
 }

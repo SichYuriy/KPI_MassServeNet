@@ -4,10 +4,11 @@ import lombok.Getter;
 import lombok.Setter;
 import modeling.lab4.Requirement;
 import modeling.lab4.element.state.CreateElementState;
-import modeling.lab4.element.state.ElementState;
 import modeling.lab4.numbergeneration.NumberGenerator;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -18,7 +19,8 @@ public class CreateElement<T extends Requirement> extends Element {
     private final NumberGenerator delayGenerator;
     private final Supplier<T> supplier;
 
-    private Map<String, Integer> requirementTypeCount = new HashMap<>();
+    private final Map<String, Integer> requirementTypeCount = new HashMap<>();
+    private final List<Requirement> requirements = new ArrayList<>();
 
     private double timeNext;
 
@@ -44,6 +46,7 @@ public class CreateElement<T extends Requirement> extends Element {
 
         int prev = requirementTypeCount.getOrDefault(requirement.getRequirementType(), 0);
         requirementTypeCount.put(requirement.getRequirementType(), prev + 1);
+        requirements.add(requirement);
     }
 
     private void arcConnectorCheck() {
