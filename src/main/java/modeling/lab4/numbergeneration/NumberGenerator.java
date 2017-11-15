@@ -4,5 +4,7 @@ public interface NumberGenerator {
 
     double generateNumber();
 
-    String getDescription();
+    default String getDescription() {
+        return "";
+    }
 }

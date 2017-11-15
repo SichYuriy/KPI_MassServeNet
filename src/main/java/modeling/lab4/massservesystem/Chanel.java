@@ -32,7 +32,7 @@ public class Chanel {
 
     private Requirement tempRequirement;
 
-    private final NumberGenerator delayGenerator;
+    private NumberGenerator delayGenerator;
     private MassServeSystem parentSystem;
 
     public Chanel(String id, NumberGenerator delayGenerator) {

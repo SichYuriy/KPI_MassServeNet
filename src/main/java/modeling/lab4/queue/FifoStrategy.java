@@ -8,6 +8,6 @@ public class FifoStrategy implements RequirementChoosingStrategy {
 
     @Override
     public Requirement chooseNext(List<Requirement> queue) {
-        return queue.get(queue.size() - 1);
+        return queue.get(0);
     }
 }

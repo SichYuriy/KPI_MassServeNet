@@ -1,5 +1,6 @@
 package modeling.lab4;
 
+import com.google.common.collect.ImmutableMap;
 import modeling.lab4.arc.Arcs;
 import modeling.lab4.arc.way.ShortestQueueWayChoosingStrategy;
 import modeling.lab4.element.CreateElement;
@@ -11,18 +12,21 @@ import modeling.lab4.numbergeneration.ExpNumberGenerator;
 import modeling.lab4.numbergeneration.NormNumberGenerator;
 import modeling.lab4.numbergeneration.NumberGenerator;
 import modeling.lab4.queue.Queues;
+import modeling.lab4.queue.RequirementQueue;
 import modeling.lab4.queue.RequirementQueueImpl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
     public static void main(String[] args) {
-        task2();
+        task3();
+//        task4();
     }
 
     public static void test() {
@@ -54,7 +58,7 @@ public class Main {
         System.out.println("State: " + kasa1.getState());
     }
 
-    private static void task2() {
+    private static void task3() {
         CreateElement createElement = new CreateElement<>("CREATOR", new ExpNumberGenerator(0.5), Requirement::new);
 
         RequirementQueueImpl queue1 = Queues.newFifoQueue("queue1", 3);
@@ -85,7 +89,7 @@ public class Main {
         DisposeElement system2Dispose = new DisposeElement("dispose2");
 
         Arcs.bindOneToManyWithBranching(createElement, Arrays.asList(window1System, window2System),
-                new ShortestQueueWayChoosingStrategy(Arrays.asList(window1System, window2System)));
+            new ShortestQueueWayChoosingStrategy(Arrays.asList(window1System, window2System)));
         Arcs.bindWithSingleArc(window1System, system1Dispose);
         Arcs.bindWithSingleArc(window2System, system2Dispose);
 
@@ -102,7 +106,8 @@ public class Main {
         createElement.setTimeNext(0.1);
 
         //Simulation
-        MassServeNet massServeNet = new MassServeNet(Arrays.asList(createElement, window1System, window2System, system1Dispose, system2Dispose));
+        MassServeNet massServeNet = new MassServeNet(
+            Arrays.asList(createElement, window1System, window2System, system1Dispose, system2Dispose));
         massServeNet.simulate(1000);
 
         //Results
@@ -114,11 +119,16 @@ public class Main {
         allReq.addAll(system2Dispose.getRequirements());
         allReq.addAll(queue1.getFailCollector().getRequirements());
         allReq.addAll(queue2.getFailCollector().getRequirements());
-        double avgClients = allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / massServeNet.getTimeCurrent();
-        double avgLifeTime = allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / allReq.size();
+        double avgClients =
+            allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / massServeNet
+                .getTimeCurrent();
+        double avgLifeTime =
+            allReq.stream().mapToDouble(r -> r.getLifeTime(massServeNet.getTimeCurrent())).sum() / allReq.size();
         System.out.println("RESULTS: ");
-        System.out.println("window1 load:" + window1.getBusyTime() / (window1.getBusyTime() + window1.getBlockedTime() + window1.getFreeTime()));
-        System.out.println("window2 load:" + window2.getBusyTime() / (window2.getBusyTime() + window2.getBlockedTime() + window2.getFreeTime()));
+        System.out.println("window1 load:" + window1.getBusyTime() / (
+            window1.getBusyTime() + window1.getBlockedTime() + window1.getFreeTime()));
+        System.out.println("window2 load:" + window2.getBusyTime() / (
+            window2.getBusyTime() + window2.getBlockedTime() + window2.getFreeTime()));
 
         System.out.println("avg clients count: " + avgClients);
 
@@ -130,9 +140,54 @@ public class Main {
         System.out.println("queue1 size: " + queue1.calcAvgQueuSize());
         System.out.println("queue2 size: " + queue2.calcAvgQueuSize());
 
-        System.out.println("failure probability: " + (1.0 * (queue1.getFailCollector().getInActionCount() + queue2.getFailCollector().getInActionCount()) / allReq.size()));
+        System.out.println("failure probability: " + (
+            1.0 * (queue1.getFailCollector().getInActionCount() + queue2.getFailCollector().getInActionCount()) / allReq
+                .size()));
         System.out.println("line change count: " + changeLineCount);
 
+    }
+
+    private static void task4() {
+        String type1 = "type_1";
+        String type2 = "type_2";
+        String type3 = "type_3";
+
+        CreateElement createElement = new CreateElement<>("CR_1", new ExpNumberGenerator(15),
+            () -> new Requirement(Math.random() < 0.5 ? type1 : (Math.random() < 0.2 ? type2 : type3)));
+
+        Chanel doc1 = new Chanel("doc1", null);
+        Chanel doc2 = new Chanel("doc2", null);
+
+        Map<String, NumberGenerator> typeDelayMap = ImmutableMap.of(
+            type1, new ExpNumberGenerator(15),
+            type2, new ExpNumberGenerator(40),
+            type3, new ExpNumberGenerator(30));
+
+
+        NumberGenerator doc1DelayGen = () -> typeDelayMap.get(doc1.getTempRequirement().getRequirementType()).generateNumber();
+        NumberGenerator doc2DelayGen = () -> typeDelayMap.get(doc2.getTempRequirement().getRequirementType()).generateNumber();
+
+        doc1.setDelayGenerator(doc1DelayGen);
+        doc2.setDelayGenerator(doc2DelayGen);
+
+        RequirementQueue receptionQueue = new RequirementQueueImpl("reception_q",
+            lr -> lr.stream().filter(r -> r.getRequirementType().equals(type1)).findFirst().orElseGet(() -> lr.get(0)),
+            Integer.MAX_VALUE);
+
+        MassServeSystem reception = new MassServeSystem("reception", receptionQueue, Arrays.asList(doc1, doc2));
+
+
+
+        DisposeElement disposeElement = new DisposeElement("disposeEl");
+
+        Arcs.bindWithSingleArc(createElement, reception);
+        Arcs.bindWithSingleArc(reception, disposeElement);
+
+        MassServeNet massServeNet = new MassServeNet(Arrays.asList(createElement, reception, disposeElement));
+
+        massServeNet.simulate(500);
+
+        printLogs(massServeNet);
     }
 
     private static void printLogs(MassServeNet net) {
@@ -143,4 +198,5 @@ public class Main {
             System.out.println();
         });
     }
+
 }

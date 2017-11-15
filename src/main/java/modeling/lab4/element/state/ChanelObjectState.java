@@ -28,6 +28,6 @@ public class ChanelObjectState extends ElementState {
     @Override
     public void printState() {
         System.out.println("--------------- CHANEL-" + id);
-        System.out.println(state + " | " + timeCurrent + " -> " + timeNextProcessEnd);
+        System.out.println(state + "(" + tempRequirement + ") | " + timeCurrent + " -> " + timeNextProcessEnd);
     }
 }
