@@ -42,7 +42,7 @@ public class Chanel {
         chanelState = ChanelState.FREE;
     }
 
-    public void doInAction(Requirement requirement) {
+    public void inputRequirement(Requirement requirement) {
         if (!isFree()) {
             throw new IllegalStateException("Chanel is " + chanelState);
         }

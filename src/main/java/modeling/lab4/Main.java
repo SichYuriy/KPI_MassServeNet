@@ -90,8 +90,8 @@ public class Main {
         Arcs.bindWithSingleArc(window2System, system2Dispose);
 
         // Start obstacles
-        window1.doInAction(new Requirement());
-        window2.doInAction(new Requirement());
+        window1.inputRequirement(new Requirement());
+        window2.inputRequirement(new Requirement());
 
         queue1.pushRequirement(new Requirement());
         queue1.pushRequirement(new Requirement());

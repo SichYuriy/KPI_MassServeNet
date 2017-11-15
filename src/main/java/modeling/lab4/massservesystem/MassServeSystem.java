@@ -40,7 +40,7 @@ public class MassServeSystem extends Element {
         } else {
             nextArc.push(childChanel.sendRequirement());
             if (requirementQueue.getSize() != 0) {
-                childChanel.doInAction(requirementQueue.popRequirement());
+                childChanel.inputRequirement(requirementQueue.popRequirement());
             }
         }
     }
@@ -56,7 +56,7 @@ public class MassServeSystem extends Element {
     public void inAction(Requirement requirement) {
         Optional<Chanel> freeChanel = chanelList.stream().filter(Chanel::isFree).findFirst();
         if (freeChanel.isPresent()) {
-            freeChanel.get().doInAction(requirement);
+            freeChanel.get().inputRequirement(requirement);
             updateNextEvent();
         } else {
             requirementQueue.pushRequirement(requirement);
