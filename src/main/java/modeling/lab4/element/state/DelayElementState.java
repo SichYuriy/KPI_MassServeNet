@@ -13,12 +13,12 @@ import java.util.List;
 @Getter
 public class DelayElementState extends ElementState {
 
-    private final List<Pair<Requirement, Double>> requirements;
+    private final List<Pair<String, Double>> requirements;
     private final String id;
 
     @Override
     public void printState() {
         System.out.println("--------------- DELAY-" + id + ": " + requirements.size());
-        requirements.forEach(p -> System.out.println(p.getKey().getRequirementType() + " -> " + p.getValue()));
+        requirements.forEach(p -> System.out.println(p.getKey() + " -> " + p.getValue()));
     }
 }

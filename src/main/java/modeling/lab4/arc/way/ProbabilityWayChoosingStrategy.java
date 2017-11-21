@@ -22,7 +22,7 @@ public class ProbabilityWayChoosingStrategy implements WayChoosingStrategy {
         double next = Math.random();
         int resultIndex = 0;
         for (Double prob: probabilityList) {
-            if (prob < next) {
+            if (next < prob) {
                 return arcs.get(resultIndex);
             }
             next -= prob;

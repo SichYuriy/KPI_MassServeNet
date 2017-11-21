@@ -120,7 +120,7 @@ public class RequirementQueueImpl implements RequirementQueue {
     }
 
     @Override
-    public double calcAvgQueuSize() {
+    public double calcAvgQueueSize() {
         return meanSizeQueue / timeCurrent;
     }
 }

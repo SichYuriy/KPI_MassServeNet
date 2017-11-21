@@ -1,27 +1,36 @@
 package modeling.lab4.arc;
 
-import lombok.Data;
-import modeling.lab4.element.Element;
+import lombok.Getter;
 import modeling.lab4.Requirement;
 import modeling.lab4.block.Block;
+import modeling.lab4.element.Element;
 
-@Data
+@Getter
 public class Arc {
 
     private final String id;
-
-    private boolean blocked;
 
     private Block block;
 
     private final Element toElement;
 
+    public Arc(String id, Element toElement) {
+        this.id = id;
+        this.toElement = toElement;
+    }
+
     public void push(Requirement requirement) {
-        if (blocked) {
+        if (isBlocked()) {
             throw new IllegalStateException("Arc is blocked");
         }
         toElement.doInAction(requirement);
     }
 
+    public boolean isBlocked() {
+        return block != null && block.isActive();
+    }
 
+    public void setBlock(Block block) {
+        this.block = block;
+    }
 }

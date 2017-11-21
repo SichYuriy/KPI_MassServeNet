@@ -25,6 +25,13 @@
             <artifactId>guava</artifactId>
             <version>10.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>mflanaga</groupId>
+            <artifactId>com.mflanaga</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/flanagan.jar</systemPath>
+        </dependency>
     </dependencies>
 
 

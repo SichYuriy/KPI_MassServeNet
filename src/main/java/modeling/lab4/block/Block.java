@@ -26,6 +26,8 @@ public class Block {
             active = newActiveValue;
             if (!active) {
                 fireUnblockElements();
+            } else {
+
             }
         }
     }

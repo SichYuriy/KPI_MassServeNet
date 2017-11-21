@@ -7,13 +7,16 @@ import lombok.Setter;
 @Setter
 public class Requirement {
 
-    private final String requirementType;
+    private String requirementType;
+
+    private final String originalType;
 
     private double creationTime;
     private double disposeTime;
 
     public Requirement(String requirementType) {
         this.requirementType = requirementType;
+        this.originalType = requirementType;
     }
 
     public Requirement() {

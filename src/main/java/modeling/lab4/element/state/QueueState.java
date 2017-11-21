@@ -23,7 +23,7 @@ public class QueueState extends ObjectState {
     public void printState() {
         System.out.print("--------------- QUEUE-" + id + ": " + queueSize + "/" + maxQueueSize);
         System.out.println("  fail:" + failCount);
-        requirements.forEach(s -> System.out.print(" -> " + s));
+        requirements.forEach(s -> System.out.print(s + " <- "));
         System.out.println();
     }
 }

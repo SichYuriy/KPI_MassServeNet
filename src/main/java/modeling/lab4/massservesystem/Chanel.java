@@ -118,4 +118,7 @@ public class Chanel {
         afterStateChangeActions.add(generalAction);
     }
 
+    public Double calcLoad() {
+        return busyTime / (freeTime + busyTime + blockedTime);
+    }
 }

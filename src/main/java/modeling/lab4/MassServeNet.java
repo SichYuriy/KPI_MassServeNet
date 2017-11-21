@@ -1,6 +1,7 @@
 package modeling.lab4;
 
 import lombok.Getter;
+import lombok.Setter;
 import modeling.lab4.element.Element;
 import modeling.lab4.element.state.ElementState;
 import modeling.lab4.element.state.MassServeNetState;
@@ -9,9 +10,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Getter
+@Setter
 public class MassServeNet {
 
     private double timeCurrent;
+
+    boolean collectState;
 
     private final List<Element> elements = new ArrayList<>();
 
@@ -40,8 +44,9 @@ public class MassServeNet {
                     .filter(e -> e.getTimeNext() == timeCurrent)
                     .forEach(Element::doOutAction);
 
-
-            noteElementsState(timeNext, nextElement);
+            if (collectState) {
+                noteElementsState(timeNext, nextElement);
+            }
         }
     }
 

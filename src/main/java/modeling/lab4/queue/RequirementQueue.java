@@ -23,5 +23,7 @@ public interface RequirementQueue {
 
     void updateStatistics(double timeStep);
 
-    double calcAvgQueuSize();
+    double calcAvgQueueSize();
+
+    void setRejectAction(RejectAction rejectAction);
 }

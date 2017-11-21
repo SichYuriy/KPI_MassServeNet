@@ -29,7 +29,7 @@ public class Arcs {
         MultipleWayArcConnector arcConnector =
                 new MultipleWayArcConnector(wayChoosingStrategy, new ArrayList<>(arcs));
         from.setArcConnector(arcConnector);
-        return arcs.stream().collect(Collectors.toMap(Arc::getId, a -> a));
+        return arcs.stream().collect(Collectors.toMap(a -> a.getToElement().getId(), a -> a));
     }
 
     private static String genArcId(Element from, Element to) {
