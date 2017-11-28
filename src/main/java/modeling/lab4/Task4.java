@@ -67,10 +67,7 @@ public class Task4 {
 
         //helpers
         List<Chanel> helpers = Channels.createChannels(new UnifNumberGenerator(3, 8), "helper", 3);
-        RequirementQueue helpersQueue = new RequirementQueueImpl("queueHelpers", null, 0);
-        helpersQueue.setRejectAction(r -> {
-            throw new IllegalStateException("Arc should be blocked");
-        });
+        RequirementQueue helpersQueue = Queues.newFifoQueue("helpersQueue", Integer.MAX_VALUE);
         MassServeSystem helpersSystem = new MassServeSystem("helpers_system", helpersQueue, helpers);
 
         // chamber
@@ -97,10 +94,9 @@ public class Task4 {
 
 
         Arcs.bindWithSingleArc(createElement, receptionSystem);
-        Map<String, Arc> arcsFromReception = Arcs.bindOneToManyWithBranching(receptionSystem, Arrays.asList(receptionLabWay, helpersSystem),
+        Arcs.bindOneToManyWithBranching(receptionSystem, Arrays.asList(receptionLabWay, helpersSystem),
                 (arcs, r) -> type1.equals(r.getRequirementType()) ? arcs.get(1) : arcs.get(0));
         Arcs.bindWithSingleArc(helpersSystem, chamber);
-        Blocks.createAllChannelsBusyBlock(arcsFromReception.get(helpersSystem.getId()), helpers);
         Arcs.bindWithSingleArc(receptionLabWay, labRegistrySystem);
         Arcs.bindWithSingleArc(labRegistrySystem, labSystem);
         Arcs.bindOneToManyWithBranching(labSystem, Arrays.asList(labDispose, labReceptionWay),
