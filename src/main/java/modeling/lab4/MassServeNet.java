@@ -15,7 +15,7 @@ public class MassServeNet {
 
     private double timeCurrent;
 
-    boolean collectState;
+    boolean collectState = true;
 
     private final List<Element> elements = new ArrayList<>();
 

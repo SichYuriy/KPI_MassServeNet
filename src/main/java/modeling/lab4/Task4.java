@@ -110,7 +110,7 @@ public class Task4 {
         MassServeNet massServeNet = new MassServeNet(Arrays.asList(createElement, receptionSystem, helpersSystem, chamber,
                 receptionLabWay, labRegistrySystem, labSystem, labDispose, labReceptionWay));
 
-        massServeNet.simulate(1000);
+        massServeNet.simulate(10000);
 
         printLogs(massServeNet);
 

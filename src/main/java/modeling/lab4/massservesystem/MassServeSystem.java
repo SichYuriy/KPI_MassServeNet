@@ -6,10 +6,7 @@ import modeling.lab4.element.Element;
 import modeling.lab4.element.state.MassServeSystemState;
 import modeling.lab4.queue.RequirementQueue;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MassServeSystem extends Element {
@@ -19,6 +16,8 @@ public class MassServeSystem extends Element {
     private final List<Chanel> chanelList = new ArrayList<>();
 
     private Chanel nextChanel;
+
+    private final Random random = new Random();
 
     public MassServeSystem(String id, RequirementQueue requirementQueue, List<Chanel> chanelList) {
         super(id);
@@ -54,7 +53,7 @@ public class MassServeSystem extends Element {
 
     @Override
     public void inAction(Requirement requirement) {
-        Optional<Chanel> freeChanel = chanelList.stream().filter(Chanel::isFree).findFirst();
+        Optional<Chanel> freeChanel = getRandomFreeChanel();
         if (freeChanel.isPresent()) {
             freeChanel.get().inputRequirement(requirement);
             updateNextEvent();
@@ -113,5 +112,14 @@ public class MassServeSystem extends Element {
 
     public Chanel getNextChanel() {
         return nextChanel;
+    }
+
+    private Optional<Chanel> getRandomFreeChanel() {
+        List<Chanel> freeChannels = chanelList.stream().filter(Chanel::isFree).collect(Collectors.toList());
+        if (freeChannels.isEmpty()) {
+            return Optional.empty();
+        } else {
+            return Optional.of(freeChannels.get(random.nextInt(freeChannels.size())));
+        }
     }
 }
