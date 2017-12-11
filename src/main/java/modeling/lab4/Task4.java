@@ -1,9 +1,7 @@
 package modeling.lab4;
 
 import com.google.common.collect.ImmutableMap;
-import modeling.lab4.arc.Arc;
 import modeling.lab4.arc.Arcs;
-import modeling.lab4.block.Blocks;
 import modeling.lab4.element.CreateElement;
 import modeling.lab4.element.DelayElement;
 import modeling.lab4.element.DisposeElement;

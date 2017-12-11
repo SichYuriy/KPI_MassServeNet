@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Getter
 public class DelayElement extends Element {
 
-    private final PriorityQueue<Pair<Requirement, Double>> requirements = new PriorityQueue<>(Comparator.comparingDouble(Pair<Requirement, Double>::getValue));
+    private final PriorityQueue<Pair<Requirement, Double>> requirements = new PriorityQueue<>(Comparator.comparingDouble(Pair::getValue));
 
     private final NumberGenerator delayGenerator;
 

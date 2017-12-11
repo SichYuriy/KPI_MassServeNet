@@ -74,7 +74,7 @@ public class Task3 {
         //Simulation
         MassServeNet massServeNet = new MassServeNet(
                 Arrays.asList(createElement, window1System, window2System, system1Dispose, system2Dispose));
-        massServeNet.simulate(1000);
+        massServeNet.simulate(200);
 
         //Results
         printLogs(massServeNet);
